@@ -11,7 +11,7 @@ function HomePage() {
   const history = useHistory();
 
   function handleClick() {
-    history.push("/form");
+    history.push("/form/create");
   }
   return (
     <div>

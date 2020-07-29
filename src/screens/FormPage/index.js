@@ -1,6 +1,7 @@
 import React,{useEffect} from "react";
+import {useSpring, animated, interpolate} from 'react-spring'
 import Box from "@material-ui/core/Box";
-import { Button, Paper } from "@material-ui/core";
+import { Button, Paper, FormGroup } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import DateFnsUtils from '@date-io/date-fns';
@@ -21,7 +22,7 @@ import RadioButton from "../components/RadioButton";
 import FormControllabel from "../components/FormControllabel";
 import { firestore } from "../../config/Firebase/firebase";
 import "firebase/firestore";
-import { useHistory,useParams } from "react-router-dom";
+import { useHistory,useParams, useLocation } from "react-router-dom";
 
 const experience = [
   { value: "1", label: "0-2 years" },
@@ -112,16 +113,15 @@ function TextTypography(props) {
 
 function Options(props) {
   const classes = useStyles();
+  console.log('gcgd',props.end)
   const handleEndChange = (event) => {
     console.log("9");
     console.log("clicked");
-    // console.log("end is", end);
-    event.preventDefault();
     props.setEnd(event.target.value);
   };
   if (props.webCheck) {
     return (
-      <RadioGroup onChange={handleEndChange}>
+      <RadioGroup value={props.end} onChange={handleEndChange}>
         <RadioButton value="front end" label="Front End" />
         <RadioButton value="back end" label="Back End" />
         <RadioButton value="both" label="Both" />
@@ -129,8 +129,8 @@ function Options(props) {
     );
   } else if (props.mobileCheck) {
     return (
-      <RadioGroup onChange={handleEndChange}>
-        <RadioButton value="android" label="Android" />
+      <RadioGroup value={props.end} onChange={handleEndChange}>
+        <RadioButton value="Android" label="Android" />
         <RadioButton value="ios" label="iOS" />
         <RadioButton value="both" label="Both" />
       </RadioGroup>
@@ -219,6 +219,7 @@ function TimeProject(props) {
 
 function DeveloperOptions(props) {
   const classes = useStyles();
+  console.log('some',props.end)
   const handleWebChange = () => {
     console.log("5");
     if (props.mobileCheck) {
@@ -237,51 +238,68 @@ function DeveloperOptions(props) {
       props.setMobileCheck(!props.mobileCheck);
     }
   };
-
+  const handleEndChange = (event) => {
+    console.log("9");
+    console.log("clicked");
+    props.setEnd(event.target.value);
+  };
   return (
     <Paper elevation={3} className={clsx(classes.paper2)}>
       <Grid container width={30} direction={"column"} spacing={2}>
         <TextTypography text="Developer for" />
-        {/* <FormGroup> */}
+        <FormGroup value={props.webCheck==true?props.check:props.mobileCheck}>
         <Grid item>
+          {/* <FormGroup value={props.fend}> */}
           <FormControllabel
+          value='Web Developer'
             checked={props.webCheck}
             onClick={handleWebChange}
             label="Web Development"
           />
           {props.webCheck && !props.mobileCheck ? (
-            <Options
-              setEnd={props.setEnd}
-              setMobile={props.setMobile}
-              webCheck={props.webCheck}
-              mobileCheck={props.mobileCheck}
-            />
+            
+              <RadioGroup value={props.end} onChange={handleEndChange}>
+                <RadioButton value="front end" label="Front End" />
+                <RadioButton value="back end" label="Back End" />
+                <RadioButton value="both" label="Both" />
+              </RadioGroup>
+            
+            // <Options
+            //   end={props.end}
+            //   setEnd={props.setEnd}
+            //   setMobile={props.setMobile}
+            //   webCheck={props.webCheck}
+            //   mobileCheck={props.mobileCheck}
+            // />
           ) : null}
-        </Grid>
-        <Grid item>
           <FormControllabel
+          value='Mobile Developer'
             checked={props.mobileCheck}
             onClick={handleMobileChange}
             label="Mobile Development"
           />
           {!props.webCheck && props.mobileCheck ? (
-            <Options
-              setEnd={props.setEnd}
-              setMobile={props.setMobile}
-              webCheck={props.webCheck}
-              mobileCheck={props.mobileCheck}
-            />
-          ) : null}{" "}
-          <br />
-        </Grid>
-        <Grid item>
+            <RadioGroup value={props.end} onChange={handleEndChange}>
+            <RadioButton value="Android" label="Android" />
+            <RadioButton value="ios" label="iOS" />
+            <RadioButton value="both" label="Both" />
+          </RadioGroup>
+            // <Options
+            //   setEnd={props.setEnd}
+            //   setMobile={props.setMobile}
+            //   webCheck={props.webCheck}
+            //   mobileCheck={props.mobileCheck}
+            // />
+          ) : null}
+          <br />    
           <Common
+            value={props.value}
             setValue={props.setValue}
             selectedDate={props.selectedDate}
             setSelectedDate={props.setSelectedDate}
           />
         </Grid>
-        {/* </FormGroup>  */}
+        </FormGroup> 
       </Grid>
     </Paper>
   );
@@ -305,6 +323,7 @@ function Common(props) {
         {props.type == "developer" ? "Developers needed" : "Designers needed"}
       </Typography>
       <Slider
+      value={props.value}
         max={50}
         defaultValue={20}
         color="secondary"
@@ -314,7 +333,7 @@ function Common(props) {
         marks={marks}
         className={clsx(classes.wide)}
       />
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <MuiPickersUtilsProvider  utils={DateFnsUtils}>
         <KeyboardDatePicker
         className={clsx(classes.wide)}
           margin="normal"
@@ -372,6 +391,7 @@ function DesignerOptions(props) {
         </Grid>
         <Grid item>
           <Common
+          value={props.value}
             setValue={props.setValue}
             selectedDate={props.selectedDate}
             setSelectedDate={props.setSelectedDate}
@@ -450,12 +470,19 @@ function StoreInFirebase(
 
 function FormPage() {
   let history = useHistory();
-  let data=useParams();
-  console.log('id is',data)
+  const props = useSpring({
+    // opacity: 1,
+    // from: { opacity: 0 },
+    x: 100, from: { x: 0 } 
+  })
+
+  const location = useLocation();
+  const uid=useParams()
+   console.log('ff',uid)
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [organization, setOrganization] = React.useState("");
-  const [type, setType] = React.useState("");
+  const [type, setType] = React.useState('');
   const [end, setEnd] = React.useState("");
   const [time, setTime] = React.useState("");
   const [value, setValue] = React.useState("");
@@ -463,66 +490,54 @@ function FormPage() {
   const [webCheck, setWebCheck] = React.useState(false);
   const [uiuxCheck, setuiuxCheck] = React.useState(false);
   const [mobileCheck, setMobileCheck] = React.useState(false);
-  const [defaultData,setDefaultData]=React.useState([])
   const [selectedDate, setSelectedDate] = React.useState(
     new Date("2020-08-18T21:11:54")
   );
+ 
   const [sskill,setSkill]=React.useState([])
   const [webDesignCheck, setWebDesignCheck] = React.useState(false);
   const handleChange = (event) => {
     console.log("2");
-    event.preventDefault();
     setType(event.target.value);
     setTime("");
   };
 
-  useEffect(() => {
-    dataFromFirebase();
-  },[defaultData]);
-
-  const dataFromFirebase = async () => {
-    const lists=[]
-    var docRef =  firestore.collection(data.types).doc(data.uid);
-    docRef.get().then(function(doc) {
-      if (doc.exists) {
-          console.log("Document data:", doc.data());
-          const {type,name,email,organization,developerType,end,experience,people,time,date} = doc.data();
-          lists.push({
-            type:type,
-            name: name,
-            email: email,
-            organization: organization,
-            developerType: developerType,
-            end: end,
-            experience: experience,
-            people: people,
-            time: time,
-            date: date,
-          });
-          setDefaultData(lists);
-          console.log('list is',defaultData)
-      } else {
-          // doc.data() will be undefined in this case
-          console.log("No such document!");
-      }
-  }).catch(function(error) {
-      console.log("Error getting document:", error);
-  });
+  const {o, xyz, color} = useSpring({
+    from: {o: 0, xyz: [0, 0, 0], color: 'red'},
+    o: 1,
+    xyz: [10, 20, 5],
+    color: 'green'
+  })
   
-  }
+  useEffect(() => {
+    const data=location.state;
+    if(data!=null)
+   { 
+    setName(data['name'])
+    setEmail(data['email'])
+    setOrganization(data['organization'])
+    setType(data['type'])
+    setEnd(data['end'])
+    setSelectedDate(data['date'])
+    setYears(data['experience'].value)
+    setTime(data['time'].value)
+    data['developerType']=='Web Developer'?setWebCheck(data['developerType']):setMobileCheck(data['developerType'])
+    setValue(data['people'])
+    console.log('from',data['type'])}
 
+  },[]);
   return (
     <Box>
       <Box bgcolor="primary.main" color="primary.contrastText" p={2}>
         <h1>Let us get to know you better!</h1>
         <TextTypography text="Are you looking for?" />
-        <RadioGroup onChange={handleChange} row>
-          <RadioButton value="developer" label="Developer" />
-          <RadioButton value="designer" label="Designer" />
+        <RadioGroup value={type} onChange={handleChange} row>
+          <RadioButton value='developer' label="Developer" />
+          <RadioButton value='designer' label="Designer" />
         </RadioGroup>
       </Box>
       <Box margin={4} display="flex" flexDirection="row">
-        {type != "" ? (
+        {type != ""? (
           <PersonalDetails
             name={name}
             setName={setName}
@@ -534,10 +549,12 @@ function FormPage() {
             setYears={setYears}
           />
         ) : null}
-        {type != "" ? (
+        {type != ""  ? (
           type == "developer" ? (
             <DeveloperOptions
               setValue={setValue}
+              end={end}
+              value={value}
               mobileCheck={mobileCheck}
               setMobileCheck={setMobileCheck}
               webCheck={webCheck}
@@ -549,6 +566,7 @@ function FormPage() {
           ) : (
             <DesignerOptions
               setValue={setValue}
+              value={value}
               webDesignCheck={webDesignCheck}
               setWebDesignCheck={setWebDesignCheck}
               uiuxCheck={uiuxCheck}

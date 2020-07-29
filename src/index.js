@@ -12,10 +12,9 @@ ReactDOM.render(
   <HashRouter>
     <Switch>
       <Route exact path="/"  component={App} />
-      <Route exact path="/home"  component={HomePage} />
-      <Route exact path="/form" component={FormPage} />
-      <Route exact path='/formData' component={FormData}/>
-      <Route exact path="/:types/:uid" component={FormPage} />
+      <Route   path="/home"  component={HomePage} />
+      <Route  path="/form/:uid"  component={FormPage} />
+      <Route  path='/formData' component={FormData}/>
     </Switch>
   </HashRouter>,
   // <React.StrictMode>

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Box, Paper, Grid } from "@material-ui/core";
 import { useStyles } from "./styles";
+import { withRouter } from "react-router";
 import clsx from "clsx";
 import { firestore } from "../../config/Firebase/firebase";
 import "firebase/firestore";
@@ -17,7 +18,8 @@ import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import PeopleIcon from "@material-ui/icons/People";
 import { useHistory } from "react-router-dom";
-export default function FormData() {
+import { keys } from "@material-ui/core/styles/createBreakpoints";
+ function FormData() {
   const classes = useStyles();
   var [call,setCall]=React.useState()
   const [devList, setDevList] = React.useState([]);
@@ -137,8 +139,9 @@ export default function FormData() {
     );
   };
 
-const onClickToNextPage=(uid,types)=>{
-  history.push({ pathname: `${types}/${uid}` });
+const onClickToNextPage=(uid,item)=>{
+  history.push({pathname:'/form/'+uid, state:item} )
+  // history.push({ pathname: `${types}/${uid}` });
 } 
 
   const RenderView = (props) => {
@@ -150,10 +153,9 @@ const onClickToNextPage=(uid,types)=>{
         (initials.shift() || "") + (initials.pop() || "")
       ).toUpperCase();
       return (
-        <Grid item xs={3}>
-          <Paper elevation={3} className={clsx(classes.paper)} onClick={()=>onClickToNextPage(item.id,item.type)}>
-            <div className={clsx(classes.box2)}>
-
+        <Grid item xs={3} >
+          <Paper elevation={3} className={clsx(classes.paper)} >
+            <div className={clsx(classes.box2)} onClick={()=>onClickToNextPage(item.id,item)}>
              {item.type=='developer'? <Avatar className={clsx(classes.avatarDev)} >
                 {initials}
               </Avatar>: <Avatar className={clsx(classes.avatarDes)} >
@@ -224,6 +226,7 @@ const onClickToNextPage=(uid,types)=>{
   );
 }
 
+export default withRouter(FormData)
 // <Box className={clsx(classes.box2)}>
 // <Avatar className={clsx(classes.avatar)}>
 //   {/* {item.name.charAt(0)} */}
