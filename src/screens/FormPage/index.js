@@ -8,6 +8,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Slider from "@material-ui/core/Slider";
+import { Fade } from "react-awesome-reveal";
 // import DateFnsUtils from "@date-io/date-fns";
 import clsx from "clsx";
 import useStyles from "./styles";
@@ -23,6 +24,7 @@ import FormControllabel from "../components/FormControllabel";
 import { firestore } from "../../config/Firebase/firebase";
 import "firebase/firestore";
 import { useHistory,useParams, useLocation } from "react-router-dom";
+import { faintBlack } from "material-ui/styles/colors";
 
 const experience = [
   { value: "1", label: "0-2 years" },
@@ -111,32 +113,32 @@ function TextTypography(props) {
   return <Typography variant="h5">{props.text}</Typography>;
 }
 
-function Options(props) {
-  const classes = useStyles();
-  console.log('gcgd',props.end)
-  const handleEndChange = (event) => {
-    console.log("9");
-    console.log("clicked");
-    props.setEnd(event.target.value);
-  };
-  if (props.webCheck) {
-    return (
-      <RadioGroup value={props.end} onChange={handleEndChange}>
-        <RadioButton value="front end" label="Front End" />
-        <RadioButton value="back end" label="Back End" />
-        <RadioButton value="both" label="Both" />
-      </RadioGroup>
-    );
-  } else if (props.mobileCheck) {
-    return (
-      <RadioGroup value={props.end} onChange={handleEndChange}>
-        <RadioButton value="Android" label="Android" />
-        <RadioButton value="ios" label="iOS" />
-        <RadioButton value="both" label="Both" />
-      </RadioGroup>
-    );
-  }
-}
+// function Options(props) {
+//   const classes = useStyles();
+//   console.log('gcgd',props.end)
+//   const handleEndChange = (event) => {
+//     console.log("9");
+//     console.log("clicked");
+//     props.setEnd(event.target.value);
+//   };
+//   if (props.webCheck) {
+//     return (
+//       <RadioGroup value={props.end} onChange={handleEndChange}>
+//         <RadioButton value="front end" label="Front End" />
+//         <RadioButton value="back end" label="Back End" />
+//         <RadioButton value="both" label="Both" />
+//       </RadioGroup>
+//     );
+//   } else if (props.mobileCheck) {
+//     return (
+//       <RadioGroup value={props.end} onChange={handleEndChange}>
+//         <RadioButton value="Android" label="Android" />
+//         <RadioButton value="ios" label="iOS" />
+//         <RadioButton value="both" label="Both" />
+//       </RadioGroup>
+//     );
+//   }
+// }
 
 function TimeProject(props) {
   const classes = useStyles();
@@ -145,10 +147,9 @@ function TimeProject(props) {
     event.preventDefault();
     props.setTime(event.target.value);
   };
-  function handleInputChange(event,value) {
-   props.setSkill(event.target.value);
-   console.log('value is',props.sskill)
-  }
+  // const handleInputChange=(event,value)=> {
+   
+  // };
   return (
     <Paper elevation={3} className={clsx(classes.paper3)}>
       <Grid container width={30} direction={"column"} spacing={3}>
@@ -164,17 +165,18 @@ function TimeProject(props) {
         </Grid>
         <Grid item>
           <Autocomplete
+            value={props.sskill}
             multiple
             options={skills}
             getOptionLabel={(option) => option.skill}
-            onChange={(event, value) => {
-              props.setSkill([...props.sskill,value])
-              console.log('value is',props.sskill)
+            onChange={(event,value)=>{
+              props.setSkill(value);
             }}
             renderInput={(params) => (
               <TextField
                 {...params}
                 variant="outlined"
+                // value={props.sskill}
                 label="Skills Required"
                 placeholder="Add"
               />
@@ -202,10 +204,11 @@ function TimeProject(props) {
                 props.uiuxCheck,
                 props.webDesignCheck,
                 props.years,
-                props.value,
+                props.people,
                 props.time,
                 props.selectedDate,
-                props.history
+                props.history,
+                props.sskill,
               )}
             >
               Save Data
@@ -219,7 +222,7 @@ function TimeProject(props) {
 
 function DeveloperOptions(props) {
   const classes = useStyles();
-  console.log('some',props.end)
+  console.log('some',props.end);
   const handleWebChange = () => {
     console.log("5");
     if (props.mobileCheck) {
@@ -230,6 +233,7 @@ function DeveloperOptions(props) {
     }
   };
   const handleMobileChange = () => {
+    console.log('before',props.mobileCheck);
     console.log("6");
     if (props.webCheck) {
       props.setMobileCheck(!props.mobileCheck);
@@ -237,6 +241,7 @@ function DeveloperOptions(props) {
     } else {
       props.setMobileCheck(!props.mobileCheck);
     }
+    console.log('after',props.mobileCheck);
   };
   const handleEndChange = (event) => {
     console.log("9");
@@ -247,11 +252,11 @@ function DeveloperOptions(props) {
     <Paper elevation={3} className={clsx(classes.paper2)}>
       <Grid container width={30} direction={"column"} spacing={2}>
         <TextTypography text="Developer for" />
-        <FormGroup value={props.webCheck==true?props.check:props.mobileCheck}>
+        <FormGroup value={props.webCheck==true?props.webCheck:props.mobileCheck}>
         <Grid item>
           {/* <FormGroup value={props.fend}> */}
           <FormControllabel
-          value='Web Developer'
+          value='Web Development'
             checked={props.webCheck}
             onClick={handleWebChange}
             label="Web Development"
@@ -263,17 +268,9 @@ function DeveloperOptions(props) {
                 <RadioButton value="back end" label="Back End" />
                 <RadioButton value="both" label="Both" />
               </RadioGroup>
-            
-            // <Options
-            //   end={props.end}
-            //   setEnd={props.setEnd}
-            //   setMobile={props.setMobile}
-            //   webCheck={props.webCheck}
-            //   mobileCheck={props.mobileCheck}
-            // />
           ) : null}
           <FormControllabel
-          value='Mobile Developer'
+          value='Mobile Development'
             checked={props.mobileCheck}
             onClick={handleMobileChange}
             label="Mobile Development"
@@ -284,17 +281,12 @@ function DeveloperOptions(props) {
             <RadioButton value="ios" label="iOS" />
             <RadioButton value="both" label="Both" />
           </RadioGroup>
-            // <Options
-            //   setEnd={props.setEnd}
-            //   setMobile={props.setMobile}
-            //   webCheck={props.webCheck}
-            //   mobileCheck={props.mobileCheck}
-            // />
           ) : null}
           <br />    
           <Common
-            value={props.value}
-            setValue={props.setValue}
+          type={props.type}
+            people={props.people}
+            setPeople={props.setPeople}
             selectedDate={props.selectedDate}
             setSelectedDate={props.setSelectedDate}
           />
@@ -309,23 +301,22 @@ function Common(props) {
   const classes = useStyles();
   const handleDateChange = (date) => {
     console.log("11");
-   
     props.setSelectedDate(date);
     console.log("date is", date);
   };
   const valuetext = (value) => {
     console.log("1");
-    props.setValue(value);
+    props.setPeople(value);
   };
+  console.log('dateeee',props.selectedDate)
   return (
     <Box>
       <Typography variant="h6">
         {props.type == "developer" ? "Developers needed" : "Designers needed"}
       </Typography>
       <Slider
-      value={props.value}
+       defaultValue={props.people}
         max={50}
-        defaultValue={20}
         color="secondary"
         getAriaValueText={valuetext}
         step={2}
@@ -333,11 +324,9 @@ function Common(props) {
         marks={marks}
         className={clsx(classes.wide)}
       />
-      <MuiPickersUtilsProvider  utils={DateFnsUtils}>
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <KeyboardDatePicker
         className={clsx(classes.wide)}
-          margin="normal"
-          id="date-picker-dialog"
           label="Start date of the project"
           format="MM/dd/yyyy"
           value={props.selectedDate}
@@ -391,8 +380,9 @@ function DesignerOptions(props) {
         </Grid>
         <Grid item>
           <Common
-          value={props.value}
-            setValue={props.setValue}
+          type={props.type}
+          people={props.people}
+            setPeople={props.setPeople}
             selectedDate={props.selectedDate}
             setSelectedDate={props.setSelectedDate}
           />
@@ -412,12 +402,13 @@ function StoreInFirebase(
   uiuxCheck,
   webDesignCheck,
   years,
-  value,
+  people,
   time,
   date,
-  history
+  history,
+  sskill,
 ) {
-  var finaldate = date.getDate() + '-' +  (date.getMonth() + 1)  + '-' +  date.getFullYear()
+  // var finaldate = date.getDate() + '-' +  (date.getMonth() + 1)  + '-' +  date.getFullYear()
   if (type == "developer") {
     firestore
       .collection("developer")
@@ -434,9 +425,10 @@ function StoreInFirebase(
             : null,
         end: end,
         experience: experience[years-1],
-        people: value,
+        people: people,
         time: times[time-1],
-        date: finaldate,
+        date: date,
+        skill:sskill
       })
       .then((data) => {
         console.log("id is", data.id);
@@ -457,9 +449,10 @@ function StoreInFirebase(
             ? "Web Designer"
             : null,
         experience: experience[years-1],
-        people: value,
+        people: people,
         time: times[time-1],
-        date: finaldate,
+        date: date,
+        skill:sskill
       })
       .then((data) => {
         console.log("id is", data.id);
@@ -482,17 +475,15 @@ function FormPage() {
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [organization, setOrganization] = React.useState("");
-  const [type, setType] = React.useState('');
+  const [type, setType] = React.useState("");
   const [end, setEnd] = React.useState("");
   const [time, setTime] = React.useState("");
-  const [value, setValue] = React.useState("");
+  const [people, setPeople] = React.useState("");
   const [years, setYears] = React.useState("");
   const [webCheck, setWebCheck] = React.useState(false);
   const [uiuxCheck, setuiuxCheck] = React.useState(false);
   const [mobileCheck, setMobileCheck] = React.useState(false);
-  const [selectedDate, setSelectedDate] = React.useState(
-    new Date("2020-08-18T21:11:54")
-  );
+  const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
  
   const [sskill,setSkill]=React.useState([])
   const [webDesignCheck, setWebDesignCheck] = React.useState(false);
@@ -501,35 +492,31 @@ function FormPage() {
     setType(event.target.value);
     setTime("");
   };
-
-  const {o, xyz, color} = useSpring({
-    from: {o: 0, xyz: [0, 0, 0], color: 'red'},
-    o: 1,
-    xyz: [10, 20, 5],
-    color: 'green'
-  })
-  
   useEffect(() => {
     const data=location.state;
     if(data!=null)
    { 
-    setName(data['name'])
-    setEmail(data['email'])
-    setOrganization(data['organization'])
-    setType(data['type'])
-    setEnd(data['end'])
-    setSelectedDate(data['date'])
-    setYears(data['experience'].value)
-    setTime(data['time'].value)
-    data['developerType']=='Web Developer'?setWebCheck(data['developerType']):setMobileCheck(data['developerType'])
-    setValue(data['people'])
-    console.log('from',data['type'])}
+    setName(data['name']);
+    setEmail(data['email']);
+    setOrganization(data['organization']);
+    setType(data['type']);
+    setEnd(data['end']);
+    console.log('before',data['date']);
+    setSelectedDate(data['date']);
+    console.log('after',selectedDate);
+    setYears(data['experience'].value);
+    setTime(data['time'].value);
+    data['developerType']=='Web Development'?setWebCheck(true):setMobileCheck(true);
+    setPeople(data['people']);
+    setSkill(data['skill']);
+    console.log('new is',selectedDate);
+  }
 
-  },[]);
+  },[location]);
   return (
     <Box>
       <Box bgcolor="primary.main" color="primary.contrastText" p={2}>
-        <h1>Let us get to know you better!</h1>
+      <Fade><h1>Let us get to know you better!</h1></Fade>
         <TextTypography text="Are you looking for?" />
         <RadioGroup value={type} onChange={handleChange} row>
           <RadioButton value='developer' label="Developer" />
@@ -552,9 +539,10 @@ function FormPage() {
         {type != ""  ? (
           type == "developer" ? (
             <DeveloperOptions
-              setValue={setValue}
+            type={type}
+              setPeople={setPeople}
               end={end}
-              value={value}
+              people={people}
               mobileCheck={mobileCheck}
               setMobileCheck={setMobileCheck}
               webCheck={webCheck}
@@ -565,8 +553,9 @@ function FormPage() {
             />
           ) : (
             <DesignerOptions
-              setValue={setValue}
-              value={value}
+            type={type}
+            setPeople={setPeople}
+            people={people}
               webDesignCheck={webDesignCheck}
               setWebDesignCheck={setWebDesignCheck}
               uiuxCheck={uiuxCheck}
@@ -576,10 +565,11 @@ function FormPage() {
             />
           )
         ) : null}
+        {console.log('end iss',end)}
         {type != "" && (end != "" || webDesignCheck || uiuxCheck) ? (
           <TimeProject
             type={type}
-            value={value}
+            people={people}
             name={name}
             email={email}
             organization={organization}

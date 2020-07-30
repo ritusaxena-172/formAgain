@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Box, Paper, Grid } from "@material-ui/core";
 import { useStyles } from "./styles";
 import { withRouter } from "react-router";
+import { Fade, Bounce } from "react-awesome-reveal";
 import clsx from "clsx";
 import { firestore } from "../../config/Firebase/firebase";
 import "firebase/firestore";
@@ -18,6 +19,7 @@ import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import PeopleIcon from "@material-ui/icons/People";
 import { useHistory } from "react-router-dom";
+import {useTransition,animated} from 'react-spring';
 import { keys } from "@material-ui/core/styles/createBreakpoints";
  function FormData() {
   const classes = useStyles();
@@ -50,6 +52,7 @@ import { keys } from "@material-ui/core/styles/createBreakpoints";
             people,
             time,
             date,
+            skill
           } = doc.data();
           lists.push({
             id:doc.id,
@@ -63,6 +66,7 @@ import { keys } from "@material-ui/core/styles/createBreakpoints";
             people: people,
             time: time,
             date: date,
+            skill:skill
           });
           console.log("kist is", lists.email);
         });
@@ -86,6 +90,7 @@ import { keys } from "@material-ui/core/styles/createBreakpoints";
             people,
             time,
             date,
+            skill
           } = doc.data();
           List.push({
             id:doc.id,
@@ -98,6 +103,7 @@ import { keys } from "@material-ui/core/styles/createBreakpoints";
             people: people,
             time: time,
             date: date,
+            skill:skill
           });
           console.log("kist is", List);
         });
@@ -114,9 +120,9 @@ import { keys } from "@material-ui/core/styles/createBreakpoints";
   };
 
   const OtherDetails = (props) => {
-    console.log("date", props.experience);
+    console.log("date", props.skill);
     return (
-      <Box>
+      <Box key={props.key}>
         <Box className={clsx(classes.otherBox)}>
           <PersonIcon/>
         <h4> Experience : </h4>
@@ -134,6 +140,13 @@ import { keys } from "@material-ui/core/styles/createBreakpoints";
             <TimerIcon />  
             <h4>Duration:</h4>
            {props.time}
+            </Box>
+        <Box className={clsx(classes.otherBox)}>
+            <h4>Skills:</h4>
+          {props.skill.map((item,index)=>{
+           return item.skill
+          })}
+          
             </Box>
       </Box>
     );
@@ -153,8 +166,9 @@ const onClickToNextPage=(uid,item)=>{
         (initials.shift() || "") + (initials.pop() || "")
       ).toUpperCase();
       return (
-        <Grid item xs={3} >
-          <Paper elevation={3} className={clsx(classes.paper)} >
+        <Grid item xs={3}>
+          <Paper elevation={3}  key={item.id} className={clsx(classes.paper)}>
+          <Bounce className={clsx(classes.paper)}>
             <div className={clsx(classes.box2)} onClick={()=>onClickToNextPage(item.id,item)}>
              {item.type=='developer'? <Avatar className={clsx(classes.avatarDev)} >
                 {initials}
@@ -183,19 +197,22 @@ const onClickToNextPage=(uid,item)=>{
             <Box>
               {show == true ? (
                 <OtherDetails
+                  key={index}
                   experience={item.experience.label}
                   time={item.time.label}
                   people={item.people}
                   date={item.date}
                   type={item.type}
+                  skill={item.skill}
                 />
               ) : null}
               {show == false ? (
-                <ExpandMoreIcon onClick={showData} />
+                <ExpandMoreIcon  key={item.id} onClick={showData} />
               ) : (
-                <ExpandLessIcon onClick={showData} />
+                <ExpandLessIcon  key={item.id} onClick={showData} />
               )}
             </Box>
+            </Bounce>
           </Paper>
         </Grid>
       );
@@ -211,8 +228,8 @@ const onClickToNextPage=(uid,item)=>{
         p={3}
       ></Box>
       <Grid className={clsx(classes.grid)} container spacing={3}>
-      <RenderView list={devList}/>
-      <RenderView list={desList}/>
+      <RenderView list={devList} key={devList.uid}/>
+      <RenderView list={desList} key={desList.uid}/>
       </Grid>
       <Box marginTop={95} bgcolor="primary.main" p={2}></Box>
       <Box
