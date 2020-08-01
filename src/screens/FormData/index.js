@@ -122,7 +122,7 @@ import { keys } from "@material-ui/core/styles/createBreakpoints";
   const OtherDetails = (props) => {
     console.log("date", props.skill);
     return (
-      <Box key={props.key}>
+      <Box>
         <Box className={clsx(classes.otherBox)}>
           <PersonIcon/>
         <h4> Experience : </h4>
@@ -161,15 +161,17 @@ const onClickToNextPage=(uid,item)=>{
     
     return props.list?.map((item, index) => {
       var name = item.name;
+      var id=item.id;
       var initials = name.match(/\b\w/g) || [];
       initials = (
         (initials.shift() || "") + (initials.pop() || "")
       ).toUpperCase();
       return (
-        <Grid item xs={3}>
-          <Paper elevation={3}  key={item.id} className={clsx(classes.paper)}>
+        <Grid item xs={3}  key={id}>
+          {console.log('index is',id)}
+          <Paper elevation={3}  className={clsx(classes.paper)}>
           <Bounce className={clsx(classes.paper)}>
-            <div className={clsx(classes.box2)} onClick={()=>onClickToNextPage(item.id,item)}>
+            <div className={clsx(classes.box2)} onClick={()=>onClickToNextPage(id,item)}>
              {item.type=='developer'? <Avatar className={clsx(classes.avatarDev)} >
                 {initials}
               </Avatar>: <Avatar className={clsx(classes.avatarDes)} >
@@ -195,9 +197,8 @@ const onClickToNextPage=(uid,item)=>{
               </Box>
             </Box>
             <Box>
-              {show == true ? (
+              {show == true ?  (
                 <OtherDetails
-                  key={index}
                   experience={item.experience.label}
                   time={item.time.label}
                   people={item.people}
@@ -207,9 +208,9 @@ const onClickToNextPage=(uid,item)=>{
                 />
               ) : null}
               {show == false ? (
-                <ExpandMoreIcon  key={item.id} onClick={showData} />
+                <ExpandMoreIcon  key={id} onClick={showData} />
               ) : (
-                <ExpandLessIcon  key={item.id} onClick={showData} />
+                <ExpandLessIcon  key={id} onClick={showData} />
               )}
             </Box>
             </Bounce>

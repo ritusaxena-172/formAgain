@@ -1,14 +1,17 @@
 import React,{useEffect} from "react";
-import {useSpring, animated, interpolate} from 'react-spring'
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+ import { useSpring, animated } from 'react-spring'
+import { Spring, animated as a } from 'react-spring/renderprops';
 import Box from "@material-ui/core/Box";
-import { Button, Paper, FormGroup } from "@material-ui/core";
+import { Button, Paper, FormGroup, Card } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import DateFnsUtils from '@date-io/date-fns';
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Slider from "@material-ui/core/Slider";
-import { Fade } from "react-awesome-reveal";
+import { Fade,Zoom} from "react-awesome-reveal";
 // import DateFnsUtils from "@date-io/date-fns";
 import clsx from "clsx";
 import useStyles from "./styles";
@@ -25,7 +28,6 @@ import { firestore } from "../../config/Firebase/firebase";
 import "firebase/firestore";
 import { useHistory,useParams, useLocation } from "react-router-dom";
 import { faintBlack } from "material-ui/styles/colors";
-
 const experience = [
   { value: "1", label: "0-2 years" },
   { value: "2", label: "2-4 years" },
@@ -57,15 +59,24 @@ const skills = [
 ];
 
 function PersonalDetails(props) {
+  const [clicked, set] = React.useState(false)
+  const { scale } = useSpring({ scale: clicked ? 1.1 : 0.95 })
   const classes = useStyles();
-
   const handleYearsChange = (event) => {
     console.log("experience isssss", event.target.value);
     props.setYears(event.target.value);
   };
-
+  
   return (
-    <Paper elevation={3} className={clsx(classes.paper1)}>
+    <animated.div onMouseOver={() => set(true)} className={clsx(classes.paper1)}
+    onMouseOut={() => set(false)}
+    style={{
+      borderRadius: '5px 5px 0 0',
+      boxShadow: '1px 2px 1px 2px rgba(0.8,0,0,0.3)',
+      transition: '0.5s',
+      transform: scale.interpolate(s => `scale(${s})`)
+    }}>
+    {/* <Card elevation={3}   > */}
       <Grid container direction={"column"} spacing={3}>
         <TextTypography text="Personal Details" />
         <Grid item>
@@ -105,7 +116,10 @@ function PersonalDetails(props) {
           />
         </Grid>
       </Grid>
-    </Paper>
+   
+    {/* </Card> */}
+    </animated.div>
+   
   );
 }
 
@@ -141,17 +155,33 @@ function TextTypography(props) {
 // }
 
 function TimeProject(props) {
+  const [clicked, set] = React.useState(false)
+  const { scale } = useSpring({ scale: clicked ? 1.1 : 0.95 })
   const classes = useStyles();
   const handleTimeChange = (event) => {
     console.log("4");
     event.preventDefault();
     props.setTime(event.target.value);
   };
+  function MouseOver(event) {
+    event.target.style.color= 'black';
+  }
+  function MouseOut(event){
+    event.target.style.color="";
+  }
   // const handleInputChange=(event,value)=> {
    
   // };
   return (
-    <Paper elevation={3} className={clsx(classes.paper3)}>
+    <animated.div onMouseOver={() => set(true)} className={clsx(classes.paper1)}
+    onMouseOut={() => set(false)}
+    style={{
+      borderRadius: '5px 5px 0 0',
+      boxShadow: '1px 2px 1px 2px rgba(0.8,0,0,0.3)',
+      transition: '0.5s',
+      transform: scale.interpolate(s => `scale(${s})`)
+    }}>
+    {/* <Paper elevation={3} className={clsx(classes.paper3)}> */}
       <Grid container width={30} direction={"column"} spacing={3}>
         <TextTypography text="About the Project" />
         <Grid item>
@@ -190,7 +220,9 @@ function TimeProject(props) {
             props.webDesignCheck ||
             props.uiuxCheck) ? (
             <Button
-              className={clsx(classes.button1)}
+            onMouseOver={MouseOver} onMouseOut={MouseOut}
+            style={{    width:'100%',height:'30%'}}
+              // className={clsx(classes.button1)}
               variant="contained"
               color="primary"
               onClick={()=>StoreInFirebase(
@@ -210,17 +242,19 @@ function TimeProject(props) {
                 props.history,
                 props.sskill,
               )}
-            >
+             >
               Save Data
             </Button>
           ) : null}
         </Grid>
       </Grid>
-    </Paper>
+    </animated.div>
   );
 }
 
 function DeveloperOptions(props) {
+  const [clicked, set] = React.useState(false)
+  const { scale } = useSpring({ scale: clicked ? 1.1 : 0.95 })
   const classes = useStyles();
   console.log('some',props.end);
   const handleWebChange = () => {
@@ -249,7 +283,15 @@ function DeveloperOptions(props) {
     props.setEnd(event.target.value);
   };
   return (
-    <Paper elevation={3} className={clsx(classes.paper2)}>
+    <animated.div onMouseOver={() => set(true)} className={clsx(classes.paper1)}
+    onMouseOut={() => set(false)}
+    style={{
+      borderRadius: '5px 5px 0 0',
+      boxShadow: '1px 2px 1px 2px rgba(0.8,0,0,0.3)',
+      transition: '0.5s',
+      transform: scale.interpolate(s => `scale(${s})`)
+    }}>
+    {/* <Paper elevation={3} className={clsx(classes.paper2)}> */}
       <Grid container width={30} direction={"column"} spacing={2}>
         <TextTypography text="Developer for" />
         <FormGroup value={props.webCheck==true?props.webCheck:props.mobileCheck}>
@@ -293,7 +335,8 @@ function DeveloperOptions(props) {
         </Grid>
         </FormGroup> 
       </Grid>
-    </Paper>
+    {/* </Paper> */}
+    </animated.div>
   );
 }
 
@@ -324,12 +367,12 @@ function Common(props) {
         marks={marks}
         className={clsx(classes.wide)}
       />
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <MuiPickersUtilsProvider  value={props.selectedDate} utils={DateFnsUtils}>
         <KeyboardDatePicker
+         
         className={clsx(classes.wide)}
           label="Start date of the project"
           format="MM/dd/yyyy"
-          value={props.selectedDate}
           onChange={handleDateChange}
           KeyboardButtonProps={{
             'aria-label': 'change date',
@@ -340,6 +383,8 @@ function Common(props) {
   );
 }
 function DesignerOptions(props) {
+  const [clicked, set] = React.useState(false)
+  const { scale } = useSpring({ scale: clicked ? 1.1 : 0.95 })
   const classes = useStyles();
   const handleWebDesignChange = () => {
     console.log("7");
@@ -361,7 +406,15 @@ function DesignerOptions(props) {
   };
 
   return (
-    <Paper className={clsx(classes.paper2)}>
+    <animated.div onMouseOver={() => set(true)} className={clsx(classes.paper2)}
+    onMouseOut={() => set(false)}
+    style={{
+      borderRadius: '5px 5px 0 0',
+      boxShadow: '1px 2px 1px 2px rgba(0.8,0,0,0.3)',
+      transition: '0.5s',
+      transform: scale.interpolate(s => `scale(${s})`)
+    }}>
+    {/* <Paper className={clsx(classes.paper2)}> */}
       <Grid container width={30} direction={"column"} spacing={3}>
         <TextTypography text="Designer for" />
         <Grid item>
@@ -388,7 +441,8 @@ function DesignerOptions(props) {
           />
         </Grid>
       </Grid>
-    </Paper>
+      </animated.div>
+    // {/* </Paper> */}
   );
 }
 function StoreInFirebase(
@@ -408,7 +462,7 @@ function StoreInFirebase(
   history,
   sskill,
 ) {
-  // var finaldate = date.getDate() + '-' +  (date.getMonth() + 1)  + '-' +  date.getFullYear()
+  var finaldate = date.getDate() + '-' +  (date.getMonth() + 1)  + '-' +  date.getFullYear()
   if (type == "developer") {
     firestore
       .collection("developer")
@@ -427,7 +481,7 @@ function StoreInFirebase(
         experience: experience[years-1],
         people: people,
         time: times[time-1],
-        date: date,
+        date: finaldate,
         skill:sskill
       })
       .then((data) => {
@@ -463,12 +517,6 @@ function StoreInFirebase(
 
 function FormPage() {
   let history = useHistory();
-  const props = useSpring({
-    // opacity: 1,
-    // from: { opacity: 0 },
-    x: 100, from: { x: 0 } 
-  })
-
   const location = useLocation();
   const uid=useParams()
    console.log('ff',uid)
@@ -483,8 +531,7 @@ function FormPage() {
   const [webCheck, setWebCheck] = React.useState(false);
   const [uiuxCheck, setuiuxCheck] = React.useState(false);
   const [mobileCheck, setMobileCheck] = React.useState(false);
-  const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
- 
+  const [selectedDate, setSelectedDate] = React.useState(new Date('2020-08-22T21:11:54'));
   const [sskill,setSkill]=React.useState([])
   const [webDesignCheck, setWebDesignCheck] = React.useState(false);
   const handleChange = (event) => {
@@ -536,7 +583,7 @@ function FormPage() {
             setYears={setYears}
           />
         ) : null}
-        {type != ""  ? (
+        {type != ""&& years!=""  ? (
           type == "developer" ? (
             <DeveloperOptions
             type={type}

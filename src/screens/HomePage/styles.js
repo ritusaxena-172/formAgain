@@ -4,6 +4,16 @@ const drawerWidth = 180;
 
 export const useStyles = makeStyles((theme) => ({
   container: {
-  color:'white'
+  color:'white',
+  flexDirection:'row',
+  display:'felx',
+  justifyContent: "space-between",
+  alignItems: "center",
   },
+  button:{
+  
+  display:'felx',
+  justifyContent: "space-between",
+  alignSelf:'center'
+  }
 }))

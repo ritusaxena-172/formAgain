@@ -23,7 +23,7 @@ function HomePage() {
           With over 10 years of experience, we know how to thrive when remote
           working is the new standard.
         </Typography>
-        <Button variant="outlined" color="primary" onClick={handleClick}>
+        <Button className={clsx(classes.button)}variant="outlined" color="primary" onClick={handleClick}>
           Contact Us
         </Button>
       </Container>
